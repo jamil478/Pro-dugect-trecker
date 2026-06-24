@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Master Budget Tracker — Take Control Of Your Money</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#fbf6ee;
+    --cream-2:#f4ecdd;
+    --paper:#fffdf9;
+    --ink:#2c2620;
+    --ink-soft:#6b6258;
+    --ink-faint:#a39a8d;
+    --coral:#ec6a4e;
+    --coral-deep:#d9532f;
+    --coral-light:#fbe2d8;
+    --gold:#e8a33d;
+    --green-check:#3f8a5e;
+    --line:#e8ddc9;
+    --radius:22px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Plus Jakarta Sans',sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  .serif{ font-family:'Fraunces',serif; }
+  a{ color:inherit; text-decoration:none; }
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* texture */
+  .paper-texture{
+    position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.5;
+    background-image:radial-gradient(circle at 1px 1px, rgba(44,38,32,0.045) 1px, transparent 0);
+    background-size:22px 22px;
+  }
+  section, header, footer{ position:relative; z-index:2; }
+
+  /* ===== Nav ===== */
+  .nav{ padding:22px 0; }
+  .nav-inner{ max-width:1100px;margin:0 auto;padding:0 24px; display:flex;align-items:center;justify-content:space-between; }
+  .brand{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:16px; }
+  .brand-mark{ width:32px;height:32px;border-radius:9px; background:var(--coral); display:flex;align-items:center;justify-content:center; font-size:15px; font-weight:800; color:#fff; transform:rotate(-4deg); }
+  .nav-cta{ background:var(--ink); color:var(--cream); font-weight:700; font-size:13.5px; padding:11px 22px; border-radius:999px; transition:transform .2s ease, background .2s ease; }
+  .nav-cta:hover{ background:var(--coral); transform:translateY(-2px); }
+
+  /* ===== Hero ===== */
+  .hero{ padding:64px 0 50px; display:grid; grid-template-columns:1.1fr 0.9fr; gap:50px; align-items:center; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700;
+    color:var(--coral-deep); background:var(--coral-light); border-radius:999px; padding:8px 16px;
+    margin-bottom:26px; opacity:0; animation:fadeUp .7s ease forwards; animation-delay:.05s;
+  }
+  .eyebrow .dot{ width:6px;height:6px;border-radius:50%; background:var(--coral); animation:pulse 1.6s infinite; }
+
+  .hero h1{
+    font-family:'Fraunces',serif; font-weight:600; font-size:clamp(36px,5.2vw,58px); line-height:1.08;
+    color:var(--ink); letter-spacing:-0.01em;
+    opacity:0; animation:fadeUp .9s ease forwards; animation-delay:.15s;
+  }
+  .hero h1 .hl{ position:relative; display:inline-block; white-space:nowrap; }
+  .hero h1 .hl svg{ position:absolute; left:-2%; right:-2%; bottom:-6px; width:104%; height:18px; z-index:-1; }
+  .hero h1 .hl path{ stroke:var(--coral); stroke-width:8; fill:none; stroke-linecap:round; stroke-dasharray:400; stroke-dashoffset:400; animation:drawLine 1s ease forwards; animation-delay:1s; }
+
+  .hero p.sub{
+    margin-top:24px; font-size:18.5px; color:var(--ink-soft); max-width:480px;
+    opacity:0; animation:fadeUp .9s ease forwards; animation-delay:.32s;
+  }
+  .hero-actions{ margin-top:36px; opacity:0; animation:fadeUp .9s ease forwards; animation-delay:.48s; }
+
+  .btn-cta{
+    position:relative; display:inline-flex; align-items:center; gap:10px;
+    background:var(--coral); color:#fff; font-weight:800; font-size:17px;
+    padding:18px 32px; border-radius:14px; overflow:hidden;
+    box-shadow:0 14px 30px -8px rgba(217,83,47,0.55);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .btn-cta::after{
+    content:""; position:absolute; inset:0; border-radius:14px;
+    background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+    transform:translateX(-100%); animation:shimmer 2.6s ease-in-out infinite;
+  }
+  .btn-cta:hover{ transform:translateY(-3px) scale(1.03); box-shadow:0 18px 36px -8px rgba(217,83,47,0.65); }
+  .btn-cta .arrow{ transition:transform .2s ease; }
+  .btn-cta:hover .arrow{ transform:translateX(4px); }
+  @keyframes shimmer{ 0%{transform:translateX(-120%);} 50%{transform:translateX(120%);} 100%{transform:translateX(120%);} }
+
+  .micro-trust{ margin-top:16px; font-size:13.5px; color:var(--ink-faint); }
+
+  /* hero visual */
+  .hero-visual{ position:relative; opacity:0; animation:fadeUp 1s ease forwards; animation-delay:.5s; }
+  .hv-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:20px;
+    padding:26px; box-shadow:0 30px 60px -20px rgba(44,38,32,0.18);
+    transform:rotate(2deg);
+    animation:floatSlow 6s ease-in-out infinite;
+  }
+  .hv-card-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+  .hv-card-head .t{ font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint);}
+  .hv-dots{ display:flex; gap:5px; }
+  .hv-dots span{ width:7px;height:7px;border-radius:50%; background:var(--line); }
+  .hv-kpis{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+  .hv-kpi{ background:var(--cream-2); border-radius:12px; padding:14px; }
+  .hv-kpi .l{ font-size:11px; color:var(--ink-faint); font-weight:600; }
+  .hv-kpi .v{ font-family:'Fraunces',serif; font-size:24px; font-weight:700; color:var(--ink); margin-top:4px; }
+  .hv-kpi .v.coral{ color:var(--coral-deep); }
+  .hv-bar-row{ margin-bottom:12px; }
+  .hv-bar-row .r{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-soft); margin-bottom:6px; font-weight:600;}
+  .hv-track{ height:9px; background:var(--cream-2); border-radius:6px; overflow:hidden; }
+  .hv-fill{ height:100%; border-radius:6px; background:linear-gradient(90deg,var(--gold),var(--coral)); width:0%; transition:width 1.5s cubic-bezier(.2,.8,.2,1); }
+  .hv-chart{ display:flex; align-items:flex-end; gap:6px; height:50px; margin-top:8px; }
+  .hv-chart .c{ flex:1; border-radius:4px 4px 0 0; background:linear-gradient(180deg,var(--coral),var(--gold)); height:0%; transition:height 1.2s cubic-bezier(.2,.8,.2,1); }
+  .hv-sticker{
+    position:absolute; top:-18px; right:-22px; background:var(--ink); color:var(--cream);
+    font-size:12.5px; font-weight:700; padding:10px 16px; border-radius:50px; transform:rotate(8deg);
+    box-shadow:0 10px 24px -6px rgba(0,0,0,0.3); animation:floatSlow 5s ease-in-out infinite reverse;
+  }
+  @keyframes floatSlow{ 0%,100%{ transform:rotate(2deg) translateY(0);} 50%{ transform:rotate(2deg) translateY(-10px);} }
+
+  /* ===== Section shells ===== */
+  .section-pad{ padding:90px 0; }
+  .kicker{
+    font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--coral-deep); margin-bottom:14px; display:inline-block;
+  }
+  h2.title{ font-family:'Fraunces',serif; font-weight:600; font-size:clamp(28px,3.6vw,42px); color:var(--ink); max-width:640px; }
+  .section-intro{ text-align:center; display:flex; flex-direction:column; align-items:center; margin-bottom:52px; }
+  .section-intro p{ color:var(--ink-soft); max-width:480px; font-size:16.5px; margin-top:14px; }
+
+  .reveal{ opacity:0; transform:translateY(30px); transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+  .reveal-stagger > *{ opacity:0; transform:translateY(22px); transition:opacity .55s ease, transform .55s ease; }
+  .reveal-stagger.in > *{ opacity:1; transform:translateY(0); }
+  .reveal-stagger.in > *:nth-child(1){transition-delay:.02s;} .reveal-stagger.in > *:nth-child(2){transition-delay:.09s;}
+  .reveal-stagger.in > *:nth-child(3){transition-delay:.16s;} .reveal-stagger.in > *:nth-child(4){transition-delay:.23s;}
+  .reveal-stagger.in > *:nth-child(5){transition-delay:.30s;} .reveal-stagger.in > *:nth-child(6){transition-delay:.37s;}
+
+  /* divider squiggle */
+  .divider{ display:flex; justify-content:center; margin:0; opacity:0.5; }
+
+  /* ===== Problem ===== */
+  .problem-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .problem-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:26px 22px;
+    transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+  }
+  .problem-card:hover{ transform:translateY(-6px) rotate(-1deg); box-shadow:0 20px 40px -14px rgba(44,38,32,0.15); border-color:#f0c9bd; }
+  .problem-card .x{ font-size:20px; margin-bottom:12px; display:block; }
+  .problem-card p{ font-size:16px; color:var(--ink); font-weight:600; }
+  .problem-highlight{
+    background:linear-gradient(135deg,var(--coral-light),var(--cream-2));
+    display:flex; align-items:center; justify-content:center; text-align:center; border-color:#f0c9bd;
+  }
+  .problem-highlight p{ color:var(--coral-deep); font-weight:700; }
+  .problem-note{
+    margin-top:32px; text-align:center; font-family:'Fraunces',serif; font-size:22px; font-weight:600; color:var(--ink);
+  }
+  .problem-note .em{ color:var(--coral-deep); }
+
+  /* ===== Solution ===== */
+  .page-preview-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-top:8px; }
+  .page-card{
+    aspect-ratio:3/4; border-radius:16px; padding:14px; display:flex; flex-direction:column; gap:8px;
+    background:var(--paper); border:1px solid var(--line);
+    transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease, border-color .3s ease;
+  }
+  .page-card:hover{ transform:translateY(-10px) rotate(1deg) scale(1.03); box-shadow:0 26px 50px -14px rgba(44,38,32,0.2); border-color:#f0c9bd; }
+  .page-card .ph-line{ height:5px; border-radius:3px; background:var(--cream-2); }
+  .page-card .ph-line.w60{width:60%;} .page-card .ph-line.w40{width:40%;}
+  .page-card .ph-block{ flex:1; border-radius:8px; background:var(--cream-2); margin-top:4px; position:relative; overflow:hidden; }
+  .page-card .ph-block .fill{ position:absolute; bottom:0; left:0; right:0; background:linear-gradient(180deg,var(--coral),var(--gold)); }
+  .page-card .tag{ font-size:9.5px; color:var(--coral-deep); font-weight:700; letter-spacing:.04em; margin-top:auto; }
+
+  /* ===== Benefits ===== */
+  .benefit-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .benefit-card{
+    display:flex; align-items:flex-start; gap:16px; padding:24px;
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    transition:transform .3s ease, box-shadow .3s ease;
+  }
+  .benefit-card:hover{ transform:translateY(-5px); box-shadow:0 20px 40px -16px rgba(44,38,32,0.15); }
+  .benefit-card .check{
+    width:36px;height:36px;border-radius:50%; background:var(--green-check); color:#fff;
+    display:flex;align-items:center;justify-content:center; font-size:16px; flex-shrink:0;
+  }
+  .benefit-card p{ font-size:16.5px; font-weight:600; color:var(--ink); padding-top:6px; }
+
+  /* ===== Included ===== */
+  .included-wrap{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .included-item{
+    display:flex; align-items:center; gap:14px; font-size:15.5px; font-weight:700; color:var(--ink);
+    background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:17px 20px;
+    transition:transform .25s ease, border-color .25s ease, background .25s ease;
+  }
+  .included-item:hover{ transform:translateX(6px); border-color:#f0c9bd; background:var(--coral-light); }
+  .included-item .ix{
+    width:28px;height:28px;border-radius:50%; flex-shrink:0;
+    background:var(--cream-2); color:var(--coral-deep); font-weight:800; font-size:12.5px;
+    display:flex;align-items:center;justify-content:center; font-family:'Fraunces',serif;
+  }
+
+  /* ===== Why choose ===== */
+  .why-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .why-card{
+    text-align:center; padding:32px 20px;
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    transition:transform .3s ease, box-shadow .3s ease;
+  }
+  .why-card:hover{ transform:translateY(-8px) scale(1.02); box-shadow:0 24px 46px -16px rgba(44,38,32,0.18); }
+  .why-card .ico{ font-size:28px; margin-bottom:14px; display:inline-block; animation:bob 3s ease-in-out infinite; }
+  .why-card:nth-child(2) .ico{ animation-delay:.25s; } .why-card:nth-child(3) .ico{ animation-delay:.5s; }
+  .why-card:nth-child(4) .ico{ animation-delay:.75s; } .why-card:nth-child(5) .ico{ animation-delay:1s; } .why-card:nth-child(6) .ico{ animation-delay:1.25s; }
+  @keyframes bob{ 0%,100%{transform:translateY(0) rotate(0);} 50%{transform:translateY(-6px) rotate(-4deg);} }
+  .why-card h3{ font-family:'Fraunces',serif; font-size:17px; color:var(--ink); margin-bottom:6px; font-weight:700; }
+  .why-card p{ font-size:14px; color:var(--ink-faint); }
+
+  /* ===== Final CTA ===== */
+  .cta-final{ text-align:center; padding:100px 0 110px; }
+  .cta-final-card{
+    max-width:760px; margin:0 auto; padding:60px 36px; border-radius:32px;
+    background:linear-gradient(155deg, var(--coral-light), var(--cream));
+    border:1px solid #f0c9bd;
+    position:relative; overflow:hidden;
+  }
+  .cta-final-card::before{
+    content:"💸"; position:absolute; font-size:90px; opacity:0.12; top:-20px; left:-20px; transform:rotate(-15deg);
+  }
+  .cta-final-card::after{
+    content:"📊"; position:absolute; font-size:80px; opacity:0.12; bottom:-15px; right:-10px; transform:rotate(12deg);
+  }
+  .cta-final h2{ font-family:'Fraunces',serif; font-size:clamp(28px,4vw,40px); color:var(--ink); font-weight:600; margin-bottom:16px; position:relative; z-index:2; }
+  .cta-final .steps{ display:flex; justify-content:center; gap:26px; margin:6px 0 36px; font-size:15.5px; color:var(--ink-soft); flex-wrap:wrap; position:relative; z-index:2; font-weight:600; }
+  .cta-final .steps b{ color:var(--coral-deep); }
+  .guarantee{ margin-top:22px; font-size:13.5px; color:var(--ink-faint); position:relative; z-index:2; }
+
+  footer{ text-align:center; padding:30px 0; color:var(--ink-faint); font-size:13px; border-top:1px solid var(--line); }
+
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+  @keyframes drawLine{ to{ stroke-dashoffset:0; } }
+
+  @media (max-width:900px){
+    .hero{ grid-template-columns:1fr; }
+    .problem-grid{ grid-template-columns:1fr; }
+    .benefit-grid{ grid-template-columns:1fr; }
+    .included-wrap{ grid-template-columns:1fr; }
+    .why-grid{ grid-template-columns:1fr; }
+    .page-preview-grid{ grid-template-columns:repeat(3,1fr); }
+  }
+  @media (max-width:600px){
+    .page-preview-grid{ grid-template-columns:repeat(2,1fr); }
+    .btn-cta{ font-size:15.5px; padding:16px 26px; }
+    .nav-cta{ display:none; }
+    .cta-final-card{ padding:40px 22px; }
+    .hv-sticker{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="paper-texture"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand"><span class="brand-mark">₮</span> Master Budget Tracker</div>
+    <a href="#cta" class="nav-cta">Get Instant Access</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero wrap">
+  <div>
+    <div class="eyebrow"><span class="dot"></span> 15-PAGE FINANCE PLANNER · INSTANT PDF</div>
+    <h1>Stop Wondering Where Your <span class="hl">Money Goes<svg viewBox="0 0 200 18" preserveAspectRatio="none"><path d="M2,12 Q50,18 100,9 T198,10"/></svg></span> Every Month</h1>
+    <p class="sub">Track your income, expenses, savings, debt &amp; investments in one simple planner.</p>
+    <div class="hero-actions">
+      <a href="#cta" class="btn-cta">🟢 Get Instant Access Now <span class="arrow">→</span></a>
+      <div class="micro-trust">Instant download · No subscription · Lifetime use · Just $7</div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hv-sticker">15 Pages 🎉</div>
+    <div class="hv-card">
+      <div class="hv-card-head"><span class="t">Financial Dashboard</span><div class="hv-dots"><span></span><span></span><span></span></div></div>
+      <div class="hv-kpis">
+        <div class="hv-kpi"><div class="l">Total Saved</div><div class="v coral">$4,280</div></div>
+        <div class="hv-kpi"><div class="l">Debt Left</div><div class="v">$2,150</div></div>
+      </div>
+      <div class="hv-bar-row"><div class="r"><span>Savings Goal</span><span>72%</span></div><div class="hv-track"><div class="hv-fill" data-w="72"></div></div></div>
+      <div class="hv-bar-row"><div class="r"><span>6-Month Spending</span><span>trend</span></div>
+        <div class="hv-chart">
+          <div class="c" data-h="40"></div><div class="c" data-h="65"></div><div class="c" data-h="35"></div>
+          <div class="c" data-h="78"></div><div class="c" data-h="52"></div><div class="c" data-h="90"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="section-pad wrap reveal">
+  <div class="section-intro">
+    <span class="kicker">The Problem</span>
+    <h2 class="title">Do Any Of These Sound Familiar?</h2>
+  </div>
+  <div class="problem-grid reveal-stagger">
+    <div class="problem-card"><span class="x">❌</span><p>Money disappears every month</p></div>
+    <div class="problem-card"><span class="x">❌</span><p>Bills are hard to track</p></div>
+    <div class="problem-card"><span class="x">❌</span><p>Saving feels impossible</p></div>
+    <div class="problem-card"><span class="x">❌</span><p>Debt keeps growing</p></div>
+    <div class="problem-card"><span class="x">❌</span><p>No clear financial plan</p></div>
+    <div class="problem-card problem-highlight"><p>If yes, keep reading 👇</p></div>
+  </div>
+  <p class="problem-note reveal">If yes, this planner was made for <span class="em">you</span>.</p>
+</section>
+
+<!-- SOLUTION -->
+<section class="section-pad wrap reveal">
+  <div class="section-intro">
+    <span class="kicker">The Solution</span>
+    <h2 class="title">Meet The Master Budget Tracker</h2>
+    <p>The complete personal finance system designed to help you organize every dollar and achieve your financial goals faster.</p>
+  </div>
+  <div class="page-preview-grid reveal-stagger">
+    <div class="page-card"><div class="ph-line w60"></div><div class="ph-line w40"></div><div class="ph-block"><div class="fill" style="height:55%"></div></div><span class="tag">DASHBOARD</span></div>
+    <div class="page-card"><div class="ph-line w60"></div><div class="ph-line w40"></div><div class="ph-block"><div class="fill" style="height:70%"></div></div><span class="tag">INCOME</span></div>
+    <div class="page-card"><div class="ph-line w60"></div><div class="ph-line w40"></div><div class="ph-block"><div class="fill" style="height:35%"></div></div><span class="tag">EXPENSES</span></div>
+    <div class="page-card"><div class="ph-line w60"></div><div class="ph-line w40"></div><div class="ph-block"><div class="fill" style="height:85%"></div></div><span class="tag">SAVINGS</span></div>
+    <div class="page-card"><div class="ph-line w60"></div><div class="ph-line w40"></div><div class="ph-block"><div class="fill" style="height:48%"></div></div><span class="tag">DEBT</span></div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="section-pad wrap reveal">
+  <div class="section-intro">
+    <span class="kicker">What You'll Achieve</span>
+    <h2 class="title">A Clearer Picture Of Every Dollar</h2>
+  </div>
+  <div class="benefit-grid reveal-stagger">
+    <div class="benefit-card"><div class="check">✓</div><p>Know exactly where your money goes</p></div>
+    <div class="benefit-card"><div class="check">✓</div><p>Build savings faster</p></div>
+    <div class="benefit-card"><div class="check">✓</div><p>Track debts effectively</p></div>
+    <div class="benefit-card"><div class="check">✓</div><p>Stay organized all year</p></div>
+    <div class="benefit-card"><div class="check">✓</div><p>Make smarter financial decisions</p></div>
+  </div>
+</section>
+
+<!-- WHAT'S INCLUDED -->
+<section class="section-pad wrap reveal">
+  <div class="section-intro">
+    <span class="kicker">What's Included</span>
+    <h2 class="title">15 Professional Finance Pages</h2>
+  </div>
+  <div class="included-wrap reveal-stagger">
+    <div class="included-item"><span class="ix">1</span>Dashboard</div>
+    <div class="included-item"><span class="ix">2</span>Income Tracker</div>
+    <div class="included-item"><span class="ix">3</span>Expense Tracker</div>
+    <div class="included-item"><span class="ix">4</span>Savings Tracker</div>
+    <div class="included-item"><span class="ix">5</span>Debt Tracker</div>
+    <div class="included-item"><span class="ix">6</span>Investment Tracker</div>
+    <div class="included-item"><span class="ix">7</span>Annual Summary</div>
+    <div class="included-item"><span class="ix">8</span>+ 8 More Pages</div>
+  </div>
+</section>
+
+<!-- WHY CHOOSE -->
+<section class="section-pad wrap reveal">
+  <div class="section-intro">
+    <span class="kicker">Why Choose This Planner</span>
+    <h2 class="title">Built To Actually Be Used</h2>
+  </div>
+  <div class="why-grid reveal-stagger">
+    <div class="why-card"><div class="ico">⭐</div><h3>Instant Download</h3><p>Get it immediately after purchase</p></div>
+    <div class="why-card"><div class="ico">⭐</div><h3>Beginner Friendly</h3><p>No experience needed</p></div>
+    <div class="why-card"><div class="ico">⭐</div><h3>Printable PDF</h3><p>Print or use digitally</p></div>
+    <div class="why-card"><div class="ico">⭐</div><h3>Mobile &amp; Tablet Friendly</h3><p>Works with GoodNotes &amp; more</p></div>
+    <div class="why-card"><div class="ico">⭐</div><h3>No Subscription</h3><p>One-time payment, forever yours</p></div>
+    <div class="why-card"><div class="ico">⭐</div><h3>Lifetime Use</h3><p>Reuse every month, every year</p></div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-final wrap reveal" id="cta">
+  <div class="cta-final-card">
+    <h2>Ready To Take Control Of Your Money?</h2>
+    <div class="steps"><span><b>Stop</b> guessing.</span><span><b>Start</b> tracking.</span><span><b>Start</b> growing.</span></div>
+    <a href="https://digitalproductdp.gumroad.com/l/uedod" class="btn-cta" target="_blank" rel="noopener">🟢 Get Instant Access Now <span class="arrow">→</span></a>
+    <div class="guarantee">Instant PDF delivery · 15 pages · A4 print-ready · One-time $7 payment</div>
+  </div>
+</section>
+
+<footer>© 2026 Master Budget Tracker — All rights reserved.</footer>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal, .reveal-stagger');
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+  }, {threshold:0.12});
+  reveals.forEach(el=>obs.observe(el));
+
+  window.addEventListener('DOMContentLoaded', ()=>{
+    setTimeout(()=>{
+      document.querySelectorAll('.hv-fill').forEach(el=>{ el.style.width = el.dataset.w + '%'; });
+      document.querySelectorAll('.hv-chart .c').forEach(el=>{ el.style.height = el.dataset.h + '%'; });
+    }, 600);
+  });
+</script>
+
+</body>
+</html>
